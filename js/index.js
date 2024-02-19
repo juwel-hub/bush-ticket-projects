@@ -1,34 +1,78 @@
 let setCount = 0;
 const perSeatPrice = 550;
+let couponApplied = 0;
+
 const cards = document.getElementsByClassName("card");
 const applyCouponBtn = document.getElementById("apply-coupon-btn");
 const inputCoupon = document.getElementById("input-coupon");
 const grandTotalText = document.getElementById("grand-total-text");
+const couponContainer = document.getElementById("coupon-container");
+const modalContainer = document.getElementById("use-modal");
+const inputName = document.getElementById("passenger-name");
+const inputNumber = document.getElementById("phone-number");
+const inputEmail = document.getElementById("email");
+
+modalContainer.addEventListener("click", function () {
+  if (inputName.value.length < 3) {
+    inputName.classList.add("border-red-500");
+  } else {
+    inputName.classList.remove("border-red-500");
+  }
+  if (inputNumber.value.length == 11) {
+    inputNumber.classList.add("border-red-500");
+  } else {
+    inputNumber.classList.remove("border-red-500");
+  }
+  if (inputEmail.value.length < 4) {
+    inputEmail.classList.add("border-red-500");
+  } else {
+    inputEmail.classList.remove("border-red-500");
+  }
+
+  if (
+    inputName.value.length < 3 ||
+    inputNumber.value.length == 11 ||
+    inputEmail.value.length < 3
+  ) {
+  } else {
+    my_modal_1.showModal();
+    inputName.value = "";
+    inputNumber.value = "";
+    inputEmail.value = "";
+  }
+});
+
 let totalPrice = 0;
 
 applyCouponBtn.addEventListener("click", function () {
   if (inputCoupon.value === "NEW15") {
-    const discount = (totalPrice / 100) * 15;
-    const grandTotal = totalPrice - discount;
-    grandTotalText.innerText = grandTotal;
-    return;
-  } else if (inputCoupon.value === "Couple20") {
-    const coupleDiscount = (totalPrice / 100) * 20;
-    console.log(coupleDiscount);
-    const coupleGrandTotal = totalPrice - coupleDiscount;
-    grandTotalText.innerText = coupleGrandTotal;
-    return;
-  } else {
-    return "invalid coupon";
+    discountFun(15);
+    couponApplied = 15;
+    couponContainer.classList.add("hidden");
+  } else if (inputCoupon.value === "Couple 20") {
+    discountFun(20);
+    couponApplied = 20;
+    couponContainer.classList.add("hidden");
   }
 });
+
+function discountFun(percentage) {
+  const coupleDiscount = (totalPrice / 100) * percentage;
+  const coupleGrandTotal = totalPrice - coupleDiscount;
+  grandTotalText.innerText = coupleGrandTotal;
+}
+
 for (const card of cards) {
   card.addEventListener("click", function (e) {
-    console.log(card);
-    if (setCount >= 4) {
-      alert("You can not select more than 4 seat");
+    if (card.classList.contains("bg-green-500")) {
       return;
     }
+    if (setCount >= 4) {
+      alert("You can not select more than 4 seat");
+
+      return;
+    }
+
     card.classList.add("bg-green-500");
     card.classList.add("text-white");
     setCount++;
@@ -64,7 +108,7 @@ for (const card of cards) {
     // total price
     totalPrice = setCount * perSeatPrice;
     document.getElementById("total-price").innerText = totalPrice;
-    grandTotalText.innerText = totalPrice;
+    discountFun(couponApplied);
   });
 }
 
